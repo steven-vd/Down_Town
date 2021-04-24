@@ -10,11 +10,13 @@ public class TaskManager : MonoBehaviour {
 	private Tilemap map, selection;
 	[SerializeField]
 	private List<TileData> tile_datas;
-
 	[SerializeField]
+	private GameObject PF_Worker;
+
 	public Dictionary<TileBase, TileData> data_from_base;
 	private Camera main_cam;
 	private List<Task> tasks = new List<Task>();
+	public List<Worker> workers = new List<Worker>();
 
 	private void Awake() {
 		Instance = this;
@@ -35,6 +37,26 @@ public class TaskManager : MonoBehaviour {
 		foreach (TileData data in tile_datas) {
 			data_from_base.Add(data.tile, data);
 		}
+
+		//DEBUG
+		SpawnWorker(3, 3);
+		SpawnWorker(-3, 3);
+	}
+
+	private void Update() {
+		foreach (Task task in tasks) {
+			if (task.worker == null) {
+				int w = task.GetClosestWorkerWithoutTask();
+				if (w != -1) {
+					workers[w].task = task;
+					task.worker = workers[w];
+				}
+			}
+		}
+	}
+
+	public void SpawnWorker(int x, int y) {
+		workers.Add(Instantiate<GameObject>(PF_Worker, new Vector3(x,y, 10), Quaternion.identity).GetComponent<Worker>());
 	}
 
 	public void OnClick(Vector3 mouse_pos) {
@@ -42,7 +64,7 @@ public class TaskManager : MonoBehaviour {
 		Vector3Int cell_coord = map.WorldToCell(world_pos);
 		TileBase map_tile = map.GetTile(cell_coord);
 		if (map_tile != null) {
-			AddTask(new Task(Task.Type.mine, cell_coord, 1.0f));
+			AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
 		}
 	}
 
@@ -70,21 +92,6 @@ public class TaskManager : MonoBehaviour {
 				break;
 		}
 		selection.SetTile(task.pos, selection_tile);
-	}
-
-	public int GetClosestTask(Vector2Int pos) {
-		if (tasks.Count == 0) {
-			return -1;
-		}
-		int closest = 0;
-		for (int i = 0; i < tasks.Count; ++i) {
-			Task t = tasks[i];
-			if (System.Math.Abs(t.pos.x - pos.x) + System.Math.Abs(t.pos.y - pos.y) <
-				System.Math.Abs(tasks[closest].pos.x - pos.x) + System.Math.Abs(tasks[closest].pos.y - pos.y)) {
-				closest = i;
-			}
-		}
-		return closest;
 	}
 
 	public Task GetTask(int i) {

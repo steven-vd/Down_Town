@@ -6,19 +6,16 @@ public class Worker : MonoBehaviour {
 
 	private Rigidbody2D rb;
 	private float task_progress = 0.0f;
+	public Task task = null;
 
 	void Start() {
 		rb = GetComponent<Rigidbody2D>();
 	}
 
 	void Update() {
-		int closest_task_index = TaskManager.Instance.GetClosestTask(
-			new Vector2Int(
-				Mathf.RoundToInt(transform.position.x),
-				Mathf.RoundToInt(transform.position.x)));
-		if (closest_task_index != -1) {
-			Task closest_task = TaskManager.Instance.GetTask(closest_task_index);
-			float dir = closest_task.pos.x - transform.position.x;
+		if (task != null) {
+			Debug.Log(gameObject.name + " | " + task.pos);
+			float dir = task.pos.x - transform.position.x;
 			const float work_range = 0.5f;
 			const float work_range_move_factor = 1.1f;
 			float task_dist = Mathf.Abs(dir);
@@ -36,17 +33,16 @@ public class Worker : MonoBehaviour {
 				//Work on task
 				const float task_completion_speed = 1.0f;
 				task_progress += task_completion_speed * Time.deltaTime;
-				if (closest_task.completion_time <= task_progress) {
-					TaskManager.Instance.RemoveTask(closest_task);
+				if (task.completion_time <= task_progress) {
+					TaskManager.Instance.RemoveTask(task);
+					task_progress = 0;
+					task = null;
 				}
 			}
-		} else {
-			task_progress = 0.0f;
 		}
 	}
 
 	private void move(int dir) {
-		Debug.Log(dir);
 		const float speed = 3f;
 		//transform.Translate(new Vector3(dir * speed * Time.deltaTime, 0, 0));
 		//rb.MovePosition(new Vector2(dir * speed * Time.deltaTime, 0));
