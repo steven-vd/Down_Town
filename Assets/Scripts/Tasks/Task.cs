@@ -14,7 +14,7 @@ public class Task {
 	public Worker worker;
 
 	public int GetClosestWorkerWithoutTask() {
-		if (TaskManager.Instance.workers.Count == 0) {
+		if (TaskManager.Instance.workers.Count == 0 || !TaskManager.Instance.isReachable(pos)) {
 			return -1;
 		}
 		int closest = -1;

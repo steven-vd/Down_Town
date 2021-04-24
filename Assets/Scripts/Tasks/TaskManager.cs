@@ -23,12 +23,18 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	void Start() {
-		//Populate Map //TODO maybe migrate this
+		//Generate Map //TODO maybe migrate this
 		const int width = 20;
 		const int depth = -10;
+		const int min_goldness = 95;
 		for (int i = -width / 2; i < width / 2; ++i) {
 			for (int j = 0; j > depth; --j) {
-				map.SetTile(new Vector3Int(i, j, 0), tile_datas[(int)TileData.TileType.ground_dirt_flat].tile);
+				int goldness = Random.Range(0, 100);
+				if (goldness > min_goldness) {
+					map.SetTile(new Vector3Int(i, j, 0), tile_datas[(int)TileData.TileType.gold].tile);
+				} else {
+					map.SetTile(new Vector3Int(i, j, 0), tile_datas[(int)TileData.TileType.ground_dirt_flat].tile);
+				}
 			}
 		}
 
@@ -110,12 +116,19 @@ public class TaskManager : MonoBehaviour {
 		tasks.Remove(task);
 	}
 
+	public bool isReachable(Vector3Int pos) {
+		return
+			map.GetTile(new Vector3Int(pos.x, pos.y + 1, 0)) == null ||
+			map.GetTile(new Vector3Int(pos.x + 1, pos.y, 0)) == null ||
+			map.GetTile(new Vector3Int(pos.x - 1, pos.y, 0)) == null;
+	}
+
 	private void checkIntegrity(Vector3Int pos) {
 		if (map.GetTile(pos) == null) {
 			return;
 		}
 		TileData.TileType type_below = data_from_base[map.GetTile(new Vector3Int(pos.x, pos.y - 1, 0))].type;
-		if (type_below != TileData.TileType.ground_dirt_flat) {
+		if (type_below != TileData.TileType.ground_dirt_flat && type_below != TileData.TileType.gold) {
 			mineTile(pos);
 		}
 	}
@@ -126,6 +139,9 @@ public class TaskManager : MonoBehaviour {
 		}
 		Vector3Int right = new Vector3Int(pos.x + 1, pos.y, 0);
 		Vector3Int left = new Vector3Int(pos.x - 1, pos.y, 0);
+		if (data_from_base[map.GetTile(pos)].type == TileData.TileType.gold) {
+			Debug.Log("GOLD");
+		}
 		map.SetTile(pos, null);
 		if (map.GetTile(right) != null) {
 			map.SetTile(right, tile_datas[(int)TileData.TileType.ground_dirt_slope_right].tile);

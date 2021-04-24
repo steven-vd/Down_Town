@@ -12,6 +12,7 @@ public class TileData : ScriptableObject {
 		selection_slope_left,
 		selection_slope_right,
 		selection_flat,
+		gold,
 	}
 
 	public TileBase tile;

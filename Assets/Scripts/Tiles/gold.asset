@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f7d053a1fc98944bbc90088b89f04bc, type: 3}
-  m_Name: selection_slope_right
+  m_Name: gold
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: ec5f17bedfd68ea4faba0a24db77e8e8, type: 2}
-  type: 4
+  tile: {fileID: 11400000, guid: 93f6b4b3a0a146041b667deb711cb2dc, type: 2}
+  type: 6

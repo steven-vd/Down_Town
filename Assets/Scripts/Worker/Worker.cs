@@ -14,10 +14,9 @@ public class Worker : MonoBehaviour {
 
 	void Update() {
 		if (task != null) {
-			Debug.Log(gameObject.name + " | " + task.pos);
 			float dir = task.pos.x - transform.position.x;
-			const float work_range = 0.5f;
-			const float work_range_move_factor = 1.1f;
+			const float work_range = 0.3f;
+			const float work_range_move_factor = 1.5f;
 			float task_dist = Mathf.Abs(dir);
 			if (task_dist * work_range_move_factor > work_range) {
 				if (task_dist > work_range) {
