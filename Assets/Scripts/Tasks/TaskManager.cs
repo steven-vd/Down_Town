@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class TaskManager : MonoBehaviour {
+	public static TaskManager Instance;
+
 	[SerializeField]
 	private Tilemap map, selection;
 	[SerializeField]
@@ -12,7 +14,11 @@ public class TaskManager : MonoBehaviour {
 	[SerializeField]
 	public Dictionary<TileBase, TileData> data_from_base;
 	private Camera main_cam;
-	private Queue<Task> tasks;
+	private List<Task> tasks = new List<Task>();
+
+	private void Awake() {
+		Instance = this;
+	}
 
 	void Start() {
 		main_cam = Camera.main;
@@ -22,23 +28,25 @@ public class TaskManager : MonoBehaviour {
 		}
 	}
 
-	void Update() {
-		if (Input.GetMouseButton(0)) {
-			Vector2 world_pos = main_cam.ScreenToWorldPoint(Input.mousePosition);
-			Vector3Int cell_coord = map.WorldToCell(world_pos);
-			TileBase map_tile = map.GetTile(cell_coord);
-			if (map_tile != null) {
-				AddTask(new Task(Task.Type.mine, cell_coord));
-			}
+	public void OnClick(Vector3 mouse_pos) {
+		Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
+		Vector3Int cell_coord = map.WorldToCell(world_pos);
+		TileBase map_tile = map.GetTile(cell_coord);
+		if (map_tile != null) {
+			AddTask(new Task(Task.Type.mine, cell_coord, 1.0f));
 		}
 	}
 
 	private void AddTask(Task task) {
-		//TODO add queue, prob with ref to worker
 		TileBase selection_tile = selection.GetTile(task.pos);
 		if (selection_tile != null) {
 			return;
 		}
+
+		//Add Task
+		//TODO check if another task of a different type is already present?
+		tasks.Add(task);
+		//Visualise
 		TileBase map_tile = map.GetTile(task.pos);
 		switch (data_from_base[map_tile].type) {
 			case TileData.TileType.ground_dirt_slope_left:
@@ -52,5 +60,29 @@ public class TaskManager : MonoBehaviour {
 				break;
 		}
 		selection.SetTile(task.pos, selection_tile);
+	}
+
+	public int GetClosestTask(Vector2Int pos) {
+		if (tasks.Count == 0) {
+			return -1;
+		}
+		int closest = 0;
+		for (int i = 0; i < tasks.Count; ++i) {
+			Task t = tasks[i];
+			if (System.Math.Abs(t.pos.x - pos.x) + System.Math.Abs(t.pos.y - pos.y) <
+				System.Math.Abs(tasks[closest].pos.x - pos.x) + System.Math.Abs(tasks[closest].pos.y - pos.y)) {
+				closest = i;
+			}
+		}
+		return closest;
+	}
+
+	public Task GetTask(int i) {
+		return tasks[i];
+	}
+
+	public void RemoveTask(Task task) {
+		selection.SetTile(task.pos, null);
+		tasks.Remove(task);
 	}
 }

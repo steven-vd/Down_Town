@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraMovement : MonoBehaviour {
+public class CameraInput : MonoBehaviour {
 	void Start() {
 	}
 
@@ -20,6 +20,10 @@ public class CameraMovement : MonoBehaviour {
 		}
 		if (Input.GetKey(InputManager.cam_right)) {
 			move(1, 0);
+		}
+		//Mouse click
+		if (Input.GetMouseButton(0)) {
+			TaskManager.Instance.OnClick(Input.mousePosition);
 		}
 	}
 	private void move(int x, int y) {
