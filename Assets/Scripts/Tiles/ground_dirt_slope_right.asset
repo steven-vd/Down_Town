@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f7d053a1fc98944bbc90088b89f04bc, type: 3}
-  m_Name: ground_dirt_slope_left 2
+  m_Name: ground_dirt_slope_right
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: 447d0f976caaf494994769eeef7840d2, type: 2}
-  type: 2
+  tile: {fileID: 11400000, guid: e24c01f5c0843574a89fd06ef8a52a4e, type: 2}
+  type: 1

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7d053a1fc98944bbc90088b89f04bc, type: 3}
   m_Name: ground_dirt_flat
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: 2aa040808fb2d1b44a991dbd21a556a1, type: 2}
-  type: 0
+  tile: {fileID: 11400000, guid: 447d0f976caaf494994769eeef7840d2, type: 2}
+  type: 2

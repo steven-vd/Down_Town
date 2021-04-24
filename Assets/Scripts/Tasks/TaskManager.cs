@@ -21,6 +21,15 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	void Start() {
+		//Populate Map //TODO maybe migrate this
+		const int width = 20;
+		const int depth = -10;
+		for (int i = -width / 2; i < width / 2; ++i) {
+			for (int j = 0; j > depth; --j) {
+				map.SetTile(new Vector3Int(i, j, 0), tile_datas[(int)TileData.TileType.ground_dirt_flat].tile);
+			}
+		}
+
 		main_cam = Camera.main;
 		data_from_base = new Dictionary<TileBase, TileData>();
 		foreach (TileData data in tile_datas) {
@@ -46,17 +55,18 @@ public class TaskManager : MonoBehaviour {
 		//Add Task
 		//TODO check if another task of a different type is already present?
 		tasks.Add(task);
+
 		//Visualise
 		TileBase map_tile = map.GetTile(task.pos);
 		switch (data_from_base[map_tile].type) {
 			case TileData.TileType.ground_dirt_slope_left:
-				selection_tile = tile_datas[4].tile;
+				selection_tile = tile_datas[(int)TileData.TileType.selection_slope_left].tile;
 				break;
 			case TileData.TileType.ground_dirt_slope_right:
-				selection_tile = tile_datas[5].tile;
+				selection_tile = tile_datas[(int)TileData.TileType.selection_slope_right].tile;
 				break;
 			default:
-				selection_tile = tile_datas[3].tile;
+				selection_tile = tile_datas[(int)TileData.TileType.selection_flat].tile;
 				break;
 		}
 		selection.SetTile(task.pos, selection_tile);
@@ -82,7 +92,42 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	public void RemoveTask(Task task) {
+		switch (task.type) {
+			case Task.Type.mine:
+				mineTile(task.pos);
+				break;
+			case Task.Type.build:
+				break;
+		}
 		selection.SetTile(task.pos, null);
 		tasks.Remove(task);
 	}
+
+	private void checkIntegrity(Vector3Int pos) {
+		if (map.GetTile(pos) == null) {
+			return;
+		}
+		TileData.TileType type_below = data_from_base[map.GetTile(new Vector3Int(pos.x, pos.y - 1, 0))].type;
+		if (type_below != TileData.TileType.ground_dirt_flat) {
+			mineTile(pos);
+		}
+	}
+
+	private void mineTile(Vector3Int pos) {
+		if (map.GetTile(pos) == null) {
+			return;
+		}
+		Vector3Int right = new Vector3Int(pos.x + 1, pos.y, 0);
+		Vector3Int left = new Vector3Int(pos.x - 1, pos.y, 0);
+		map.SetTile(pos, null);
+		if (map.GetTile(right) != null) {
+			map.SetTile(right, tile_datas[(int)TileData.TileType.ground_dirt_slope_right].tile);
+			checkIntegrity(new Vector3Int(pos.x + 1, pos.y + 1, 0));
+		}
+		if (map.GetTile(left) != null) {
+			map.SetTile(left, tile_datas[(int)TileData.TileType.ground_dirt_slope_left].tile);
+			checkIntegrity(new Vector3Int(pos.x - 1, pos.y + 1, 0));
+		}
+	}
+
 }
