@@ -58,7 +58,7 @@ public class CameraInput : MonoBehaviour {
 	public void ToggleMenu() {
 		menu.SetActive(!menu.activeSelf);
 		menu.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "Resume";
-		TaskManager.Instance.addGold(0);
+		TaskManager.Instance.AddGold(0);
 	}
 
 	public void Quit() {

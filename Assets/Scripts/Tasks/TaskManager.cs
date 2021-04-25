@@ -53,7 +53,7 @@ public class TaskManager : MonoBehaviour {
 		tasks.Clear();
 
 		_gold_amnt = 0;
-		addGold(0);
+		AddGold(0);
 		map_left = -map_initial_width / 2;
 		map_right = map_initial_width / 2;
 		map_depth = map_initial_depth;
@@ -76,9 +76,12 @@ public class TaskManager : MonoBehaviour {
 		}
 	}
 
-	public void addGold(int amnt) {
+	public void AddGold(int amnt) {
 		_gold_amnt += amnt;
 		ui_text_gold.text = "Gold: " + _gold_amnt;
+		if (amnt > 0) {
+			SoundManager.Instance.PlayGoldDing();
+		}
 	}
 
 	public Vector2Int GetEdges() {
@@ -137,7 +140,7 @@ public class TaskManager : MonoBehaviour {
 				return;
 			}
 
-			addGold(-house_price);
+			AddGold(-house_price);
 			buildHouse(cell_coord);
 		}
 	}
@@ -293,7 +296,7 @@ public class TaskManager : MonoBehaviour {
 		Vector3Int right = new Vector3Int(pos.x + 1, pos.y, 0);
 		Vector3Int left = new Vector3Int(pos.x - 1, pos.y, 0);
 		if (data_from_base[map.GetTile(pos)].type == TileData.TileType.gold) {
-			addGold(1);
+			AddGold(1);
 		}
 		map.SetTile(pos, null);
 		if (map.GetTile(right) != null) {
