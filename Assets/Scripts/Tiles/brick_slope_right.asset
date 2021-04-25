@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7d053a1fc98944bbc90088b89f04bc, type: 3}
   m_Name: brick_slope_right
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: c041af343c3871f4bb16d2662438c865, type: 2}
+  tile: {fileID: 11400000, guid: ca374e4f99ad7144387cc78af6efac70, type: 2}
   type: 8

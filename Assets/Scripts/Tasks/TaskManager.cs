@@ -7,7 +7,10 @@ using UnityEngine.UI;
 public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
 
-	//private List<GameObject>
+	private Dictionary<int, GameObject> house_fxs = new Dictionary<int, GameObject>();
+
+	[SerializeField]
+	private GameObject house_fx;
 
 	[SerializeField]
 	private Tilemap map, foreground, selection, background;
@@ -227,6 +230,14 @@ public class TaskManager : MonoBehaviour {
 		foreground.SetTile(new Vector3Int(x + 1, y + 2, 0), slope_left);
 		foreground.SetTile(new Vector3Int(x + 0, y + 2, 0), brick);
 		foreground.SetTile(new Vector3Int(x + 0, y + 3, 0), slope_left);
+		//Background
+		background.SetTile(new Vector3Int(x - 1, y + 0, 0), brick);
+		background.SetTile(new Vector3Int(x - 1, y + 1, 0), brick);
+		background.SetTile(new Vector3Int(x + 0, y + 0, 0), brick);
+		background.SetTile(new Vector3Int(x + 0, y + 1, 0), brick);
+
+		//FX
+		house_fxs.Add(x, Instantiate<GameObject>(house_fx, new Vector3(pos.x, pos.y + 1, 0), Quaternion.identity));
 
 		SpawnWorker(x, y + 1);
 	}
@@ -312,6 +323,10 @@ public class TaskManager : MonoBehaviour {
 			foreground.SetTile(new Vector3Int(x + 1, y + 2, 0), null);
 			foreground.SetTile(new Vector3Int(x + 0, y + 2, 0), null);
 			foreground.SetTile(new Vector3Int(x + 0, y + 3, 0), null);
+
+			GameObject tmp_house_fx = house_fxs[x];
+			house_fxs.Remove(x);
+			Destroy(tmp_house_fx);
 
 			// Kill random worker
 			Destroy(workers[workers.Count - 1].gameObject);

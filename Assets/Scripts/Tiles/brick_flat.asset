@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7d053a1fc98944bbc90088b89f04bc, type: 3}
   m_Name: brick_flat
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: 7fa16f353ef7ed443997e04f04495f3a, type: 2}
+  tile: {fileID: 11400000, guid: f900bd82d4330cf4abaf40b1654d3b82, type: 2}
   type: 9
