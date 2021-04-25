@@ -36,6 +36,17 @@ public class CameraInput : MonoBehaviour {
 		}
 	}
 	private void move(int x, int y) {
+		//Check left right bounds
+		const int cam_margin = 10;
+		if (transform.position.x + x - cam_margin < TaskManager.map_left || transform.position.x + x + cam_margin > TaskManager.map_right) {
+			return;
+		}
+		//Check top bottom bounds
+		const int top = 15;
+		if (transform.position.y + y - cam_margin < TaskManager.map_depth || transform.position.y + y + cam_margin > top) {
+			return;
+		}
+
 		float speed = InputManager.cam_move_speed * Time.deltaTime;
 		transform.Translate(x * speed, y * speed, 0);
 	}
