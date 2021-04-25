@@ -3,11 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraInput : MonoBehaviour {
+
+	[SerializeField]
+	private GameObject menu;
+
 	void Start() {
 	}
 
 	void Update() {
 		// --- Input ---
+
+		// - Toggle Menu -
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			ToggleMenu();
+		}
+
+		if (menu.activeSelf) {
+			return;
+		}
+
 		// - Camera Movement -
 		if (Input.GetKey(InputManager.cam_up)) {
 			move(0, 1);
@@ -39,6 +53,15 @@ public class CameraInput : MonoBehaviour {
 			TaskManager.build_mode = !TaskManager.build_mode;
 		}
 	}
+
+	public void ToggleMenu() {
+		menu.SetActive(!menu.activeSelf);
+	}
+
+	public void Quit() {
+		Application.Quit();
+	}
+
 	private void move(int x, int y) {
 		//Check left right bounds
 		const int cam_margin = 10;
