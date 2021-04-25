@@ -80,6 +80,9 @@ public class TaskManager : MonoBehaviour {
 		background.ClearAllTiles();
 		selection.ClearAllTiles();
 		tasks.Clear();
+		foreach (Worker w in workers) {
+			Destroy(w.gameObject);
+		}
 		workers.Clear();
 
 		_gold_amnt = 3;
