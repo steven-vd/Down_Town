@@ -14,7 +14,7 @@ public class SoundManager : MonoBehaviour {
 	void Awake() {
 		Instance = this;
 
-		const float vol_music = 0.25f;
+		const float vol_music = 0.125f;
 		const float vol_sfx = 0.25f;
 
 		sources = new AudioSource[clips.Length];
@@ -30,7 +30,7 @@ public class SoundManager : MonoBehaviour {
 	}
 
 	public void SetMusicVol(Slider s) {
-		sources[0].volume = s.value / 2;
+		sources[0].volume = s.value / 4;
 	}
 
 	public void SetSfxVol(Slider s) {

@@ -7,6 +7,14 @@ using UnityEngine.UI;
 public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
 
+	int depth = 0;
+
+	public int hint_stage = 9;
+	[SerializeField]
+	public Text hint;
+	[SerializeField]
+	public Text ui_text_depth;
+
 	private Dictionary<int, GameObject> house_fxs = new Dictionary<int, GameObject>();
 
 	[SerializeField]
@@ -52,11 +60,13 @@ public class TaskManager : MonoBehaviour {
 		}
 		init();
 		ui_text_gold.text = "";
+		ui_text_depth.text = "";
 	}
 
 	private void init() {
 		map.ClearAllTiles();
 		foreground.ClearAllTiles();
+		background.ClearAllTiles();
 		selection.ClearAllTiles();
 		tasks.Clear();
 
@@ -92,8 +102,19 @@ public class TaskManager : MonoBehaviour {
 	public void AddGold(int amnt) {
 		_gold_amnt += amnt;
 		ui_text_gold.text = "Gold: " + _gold_amnt;
+		ui_text_depth.text = "Depth: " + depth;
 		if (amnt > 0) {
 			SoundManager.Instance.PlayGoldDing();
+		}
+		if (hint_stage == 10) {
+			hint.text = "WASD to look around";
+			++hint_stage;
+		}
+		if (hint_stage == 15) {
+			if (_gold_amnt == 3) {
+				hint.text = "";
+				++hint_stage;
+			}
 		}
 	}
 
@@ -170,6 +191,14 @@ public class TaskManager : MonoBehaviour {
 				} else {
 					AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
 				}
+				if (hint_stage == 14) {
+					hint.text = "Mine three gold to buy a new house\nBe careful not do undermine your original house";
+					++hint_stage;
+					if (workers.Count > 1) {
+						hint.text = "";
+						++hint_stage;
+					}
+				}
 			}
 		}
 	}
@@ -208,6 +237,10 @@ public class TaskManager : MonoBehaviour {
 
 			AddGold(-house_price);
 			buildHouse(cell_coord);
+			if (hint_stage == 12) {
+				hint.text = "Press <Space> to toggle Build/Mine Mode";
+				++hint_stage;
+			}
 		}
 	}
 
@@ -401,6 +434,11 @@ public class TaskManager : MonoBehaviour {
 		if (pos.y + map_initial_depth < map_depth) {
 			populateRow(pos.y + map_initial_depth + 1);
 			--map_depth;
+		}
+
+		if (pos.y - 1 < -depth) {
+			++depth;
+			ui_text_depth.text = "Depth: " + depth;
 		}
 	}
 
