@@ -39,8 +39,8 @@ public class TaskManager : MonoBehaviour {
 	public static bool build_mode = false;
 	public static int _gold_amnt;
 
-	private const int map_initial_width = 40;
-	private const int map_initial_depth = -15;
+	private const int map_initial_width = 60;
+	private const int map_initial_depth = -25;
 
 	public static int map_left;
 	public static int map_right;
@@ -110,8 +110,8 @@ public class TaskManager : MonoBehaviour {
 			hint.text = "WASD to look around";
 			++hint_stage;
 		}
-		if (hint_stage == 15) {
-			if (_gold_amnt == 3) {
+		if (hint_stage >= 15) {
+			if (_gold_amnt >= 3) {
 				hint.text = "";
 				++hint_stage;
 			}
@@ -238,7 +238,7 @@ public class TaskManager : MonoBehaviour {
 			AddGold(-house_price);
 			buildHouse(cell_coord);
 			if (hint_stage == 12) {
-				hint.text = "Press <Space> to toggle Build/Mine Mode";
+				hint.text = "<Space> to toggle Build/Mine Mode";
 				++hint_stage;
 			}
 		}
