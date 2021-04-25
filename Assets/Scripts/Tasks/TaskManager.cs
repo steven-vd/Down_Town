@@ -23,31 +23,43 @@ public class TaskManager : MonoBehaviour {
 	public List<Worker> workers = new List<Worker>();
 
 	public static bool build_mode = false;
-	public static int _gold_amnt = 10;
+	public static int _gold_amnt;
 
 	private const int map_initial_width = 40;
 	private const int map_initial_depth = -15;
 
-	public static int map_left = -map_initial_width / 2;
-	public static int map_right = map_initial_width / 2;
-	public static int map_depth = map_initial_depth;
+	public static int map_left;
+	public static int map_right;
+	public static int map_depth;
 
 	private void Awake() {
 		Instance = this;
 	}
 
 	void Start() {
-		for (int i = -map_initial_width / 2; i < map_initial_width / 2; ++i) {
-			populateColumn(i);
-		}
-
 		main_cam = Camera.main;
 		data_from_base = new Dictionary<TileBase, TileData>();
 		foreach (TileData data in tile_datas) {
 			data_from_base.Add(data.tile, data);
 		}
+		init();
+	}
 
-		//DEBUG
+	private void init() {
+		map.ClearAllTiles();
+		foreground.ClearAllTiles();
+		selection.ClearAllTiles();
+		tasks.Clear();
+
+		_gold_amnt = 0;
+		addGold(0);
+		map_left = -map_initial_width / 2;
+		map_right = map_initial_width / 2;
+		map_depth = map_initial_depth;
+		main_cam.transform.position = new Vector3(0, 0, 0);
+		for (int i = -map_initial_width / 2; i < map_initial_width / 2; ++i) {
+			populateColumn(i);
+		}
 		buildHouse(new Vector3Int(0, 1, 0));
 	}
 
@@ -236,6 +248,9 @@ public class TaskManager : MonoBehaviour {
 			// Kill random worker
 			Destroy(workers[workers.Count - 1].gameObject);
 			workers.RemoveAt(workers.Count - 1);
+			if (workers.Count == 0) {
+				init();
+			}
 			return;
 		} else if (map.GetTile(pos) == null) {
 			return;
