@@ -7,6 +7,9 @@ public class CameraInput : MonoBehaviour {
 
 	[SerializeField]
 	private GameObject menu;
+	[SerializeField]
+	private GameObject sky;
+
 
 	void Start() {
 	}
@@ -81,5 +84,6 @@ public class CameraInput : MonoBehaviour {
 
 		float speed = InputManager.cam_move_speed * Time.deltaTime;
 		transform.Translate(x * speed, y * speed, 0);
+		sky.transform.position = new Vector3(transform.position.x, 4, 14);
 	}
 }
