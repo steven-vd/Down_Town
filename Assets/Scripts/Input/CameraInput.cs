@@ -22,9 +22,13 @@ public class CameraInput : MonoBehaviour {
 			move(1, 0);
 		}
 
-		// - Mouse click - 
+		// - Mouse Left Click - 
 		if (Input.GetMouseButtonDown(0)) {
 			TaskManager.Instance.OnClick(Input.mousePosition);
+		}
+		// - Mouse Right Click - 
+		if (Input.GetMouseButton(1)) {
+			TaskManager.Instance.OnRight(Input.mousePosition);
 		}
 		// - Mouse Btn Hold -
 		if (Input.GetMouseButton(0)) {

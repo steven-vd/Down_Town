@@ -83,6 +83,12 @@ public class TaskManager : MonoBehaviour {
 		}
 	}
 
+	public void OnRight(Vector3 mouse_pos) {
+		Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
+		Vector3Int cell_coord = map.WorldToCell(world_pos);
+		RemoveTask(GetTaskAt(cell_coord), false);
+	}
+
 	public void OnClick(Vector3 mouse_pos) {
 		if (build_mode) {
 			//TODO ? Add a task for this???
@@ -166,13 +172,21 @@ public class TaskManager : MonoBehaviour {
 		return tasks[i];
 	}
 
-	public void RemoveTask(Task task) {
-		switch (task.type) {
-			case Task.Type.mine:
-				mineTile(task.pos);
-				break;
-			case Task.Type.build:
-				break;
+	public Task GetTaskAt(Vector3Int cell_coord) {
+		foreach (Task t in tasks) {
+			if (t.pos.x == cell_coord.x && t.pos.y == cell_coord.y) {
+				return t;
+			}
+		}
+		return null;
+	}
+
+	public void RemoveTask(Task task, bool success) {
+		if (task == null) {
+			return;
+		}
+		if (success) {
+			mineTile(task.pos);
 		}
 		selection.SetTile(task.pos, null);
 		tasks.Remove(task);

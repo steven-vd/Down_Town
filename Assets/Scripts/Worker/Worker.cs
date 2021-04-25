@@ -33,7 +33,7 @@ public class Worker : MonoBehaviour {
 				const float task_completion_speed = 1.0f;
 				task_progress += task_completion_speed * Time.deltaTime;
 				if (task.completion_time <= task_progress) {
-					TaskManager.Instance.RemoveTask(task);
+					TaskManager.Instance.RemoveTask(task, true);
 					task_progress = 0;
 					task = null;
 				}
