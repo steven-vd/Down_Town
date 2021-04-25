@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
@@ -13,13 +14,16 @@ public class TaskManager : MonoBehaviour {
 	[SerializeField]
 	private GameObject PF_Worker;
 
+	[SerializeField]
+	private Text ui_text_gold;
+
 	public Dictionary<TileBase, TileData> data_from_base;
 	private Camera main_cam;
 	private List<Task> tasks = new List<Task>();
 	public List<Worker> workers = new List<Worker>();
 
 	public static bool build_mode = false;
-	public static int gold_amnt = 10;
+	public static int _gold_amnt = 10;
 
 	private const int map_initial_width = 40;
 	private const int map_initial_depth = -15;
@@ -59,6 +63,11 @@ public class TaskManager : MonoBehaviour {
 		}
 	}
 
+	public void addGold(int amnt) {
+		_gold_amnt += amnt;
+		ui_text_gold.text = "Gold: " + _gold_amnt;
+	}
+
 	public Vector2Int GetEdges() {
 		int left = -map_initial_width / 2 + 1, right = map_initial_width / 2 - 1;
 
@@ -95,7 +104,7 @@ public class TaskManager : MonoBehaviour {
 			Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
 			Vector3Int cell_coord = map.WorldToCell(world_pos);
 			const int house_price = 3;
-			if (gold_amnt < house_price ||
+			if (_gold_amnt < house_price ||
 				map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y - 1, 0)) == null ||
 				data_from_base[map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
 				map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y - 1, 0)) == null ||
@@ -115,7 +124,7 @@ public class TaskManager : MonoBehaviour {
 				return;
 			}
 
-			gold_amnt -= house_price;
+			addGold(-house_price);
 			buildHouse(cell_coord);
 		}
 	}
@@ -268,7 +277,7 @@ public class TaskManager : MonoBehaviour {
 		Vector3Int right = new Vector3Int(pos.x + 1, pos.y, 0);
 		Vector3Int left = new Vector3Int(pos.x - 1, pos.y, 0);
 		if (data_from_base[map.GetTile(pos)].type == TileData.TileType.gold) {
-			++gold_amnt;
+			addGold(1);
 		}
 		map.SetTile(pos, null);
 		if (map.GetTile(right) != null) {
