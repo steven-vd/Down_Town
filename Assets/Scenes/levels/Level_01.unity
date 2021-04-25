@@ -927,7 +927,6 @@ GameObject:
   - component: {fileID: 819567346}
   - component: {fileID: 819567349}
   - component: {fileID: 819567348}
-  - component: {fileID: 819567347}
   m_Layer: 11
   m_Name: Background
   m_TagString: Untagged
@@ -949,22 +948,6 @@ Transform:
   m_Father: {fileID: 286518997}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!19719996 &819567347
-TilemapCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 819567345}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_MaximumTileChangeCount: 1000
-  m_ExtrusionFactor: 0.00001
 --- !u!483693784 &819567348
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -1080,7 +1063,7 @@ Tilemap:
     m_Data: {r: 3.2575e-41, g: 3.2575e-41, b: 3.2575e-41, a: 3.2575e-41}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 1}
   m_Origin: {x: -6, y: -3, z: 0}
   m_Size: {x: 13, y: 9, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -1292,7 +1275,6 @@ GameObject:
   - component: {fileID: 1263293148}
   - component: {fileID: 1263293151}
   - component: {fileID: 1263293150}
-  - component: {fileID: 1263293149}
   m_Layer: 10
   m_Name: Foreground
   m_TagString: Untagged
@@ -1314,22 +1296,6 @@ Transform:
   m_Father: {fileID: 286518997}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!19719996 &1263293149
-TilemapCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1263293147}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_MaximumTileChangeCount: 1000
-  m_ExtrusionFactor: 0.00001
 --- !u!483693784 &1263293150
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -2749,6 +2715,7 @@ MonoBehaviour:
   map: {fileID: 1396443367}
   foreground: {fileID: 1263293151}
   selection: {fileID: 1348241179}
+  background: {fileID: 819567349}
   tmp_selection: {fileID: 1441764210}
   tile_datas:
   - {fileID: 11400000, guid: e019286427fd2c94aad43529d88183ae, type: 2}

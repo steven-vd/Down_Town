@@ -8,7 +8,7 @@ public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
 
 	[SerializeField]
-	private Tilemap map, foreground, selection;
+	private Tilemap map, foreground, selection, background;
 	public Tilemap tmp_selection;
 	[SerializeField]
 	private List<TileData> tile_datas;
@@ -32,6 +32,8 @@ public class TaskManager : MonoBehaviour {
 	public static int map_left;
 	public static int map_right;
 	public static int map_depth;
+
+	private bool should_reset = false;
 
 	private void Awake() {
 		Instance = this;
@@ -58,15 +60,19 @@ public class TaskManager : MonoBehaviour {
 		map_left = -map_initial_width / 2;
 		map_right = map_initial_width / 2;
 		map_depth = map_initial_depth;
-		main_cam.transform.position = new Vector3(0, 0, 0);
+		main_cam.transform.position = new Vector3(0, 2, 0);
 		for (int i = -map_initial_width / 2; i < map_initial_width / 2; ++i) {
 			populateColumn(i);
 		}
 		build_mode = true;
-		//buildHouse(new Vector3Int(0, 1, 0));
 	}
 
 	private void Update() {
+		if (should_reset) {
+			should_reset = false;
+			init();
+			return;
+		}
 		foreach (Task task in tasks) {
 			if (task.worker == null) {
 				int w = task.GetClosestWorkerWithoutTask();
@@ -308,7 +314,7 @@ public class TaskManager : MonoBehaviour {
 			Destroy(workers[workers.Count - 1].gameObject);
 			workers.RemoveAt(workers.Count - 1);
 			if (workers.Count == 0) {
-				init();
+				should_reset = true;
 			}
 			return;
 		} else if (map.GetTile(pos) == null) {
@@ -323,6 +329,7 @@ public class TaskManager : MonoBehaviour {
 	private const int min_goldness = 96;
 	private void populateRow(int row) {
 		for (int x = map_left; x < map_right; ++x) {
+			background.SetTile(new Vector3Int(x, row, 0), tile_datas[(int)TileData.TileType.ground_dirt_flat].tile);
 			int goldness = Random.Range(0, 100);
 			if (goldness > min_goldness) {
 				map.SetTile(new Vector3Int(x, row, 0), tile_datas[(int)TileData.TileType.gold].tile);
@@ -334,6 +341,7 @@ public class TaskManager : MonoBehaviour {
 
 	private void populateColumn(int col) {
 		for (int depth = 0; depth > map_depth; --depth) {
+			background.SetTile(new Vector3Int(col, depth, 0), tile_datas[(int)TileData.TileType.ground_dirt_flat].tile);
 			int goldness = Random.Range(0, 100);
 			if (goldness > min_goldness) {
 				map.SetTile(new Vector3Int(col, depth, 0), tile_datas[(int)TileData.TileType.gold].tile);
