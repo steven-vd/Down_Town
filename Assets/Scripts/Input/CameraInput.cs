@@ -8,7 +8,13 @@ public class CameraInput : MonoBehaviour {
 	[SerializeField]
 	private GameObject menu;
 	[SerializeField]
+	private Text personal_deepest_ui_text;
+	[SerializeField]
 	private GameObject sky;
+
+	private void Start() {
+		personal_deepest_ui_text.text = "Personal Best: " + TaskManager.Instance.personal_deepest;
+	}
 
 	void Update() {
 		// --- Input ---
@@ -65,6 +71,12 @@ public class CameraInput : MonoBehaviour {
 		menu.SetActive(!menu.activeSelf);
 		menu.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "Resume";
 		TaskManager.Instance.AddGold(0);
+		TaskManager.Instance.should_time = true;
+		if (menu.activeSelf) {
+			personal_deepest_ui_text.text = "Personal Best: " + TaskManager.Instance.personal_deepest;
+		} else {
+			personal_deepest_ui_text.text = "";
+		}
 	}
 
 	public void Quit() {

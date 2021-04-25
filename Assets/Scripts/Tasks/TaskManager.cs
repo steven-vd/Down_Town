@@ -7,13 +7,23 @@ using UnityEngine.UI;
 public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
 
-	int depth = 0;
+	public bool should_time = false;
+
+	public float time_left;
+
+	public int personal_deepest = 0;
+	private int depth = 0;
 
 	public int hint_stage = 9;
 	[SerializeField]
 	public Text hint;
 	[SerializeField]
 	public Text ui_text_depth;
+	[SerializeField]
+	public Text time;
+	[SerializeField]
+	private Text time_up_text;
+	private float time_up_text_time;
 
 	private Dictionary<int, GameObject> house_fxs = new Dictionary<int, GameObject>();
 
@@ -64,13 +74,16 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	private void init() {
+		time_left = 60.0f;
 		map.ClearAllTiles();
 		foreground.ClearAllTiles();
 		background.ClearAllTiles();
 		selection.ClearAllTiles();
 		tasks.Clear();
+		workers.Clear();
 
 		_gold_amnt = 3;
+		depth = 0;
 		AddGold(0);
 		map_left = -map_initial_width / 2;
 		map_right = map_initial_width / 2;
@@ -83,11 +96,25 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	private void Update() {
+		if (time_up_text_time < 0) {
+			time_up_text.text = "";
+		} else {
+			time_up_text_time -= Time.deltaTime;
+		}
+		if (should_time) {
+			time_left -= Time.deltaTime;
+		}
+		if (time_left < 0) {
+			should_reset = true;
+		}
 		if (should_reset) {
 			should_reset = false;
 			init();
+			time_up_text_time = 3.0f;
+			time_up_text.text = "GAME OVER!\nPERSONAL BEST: " + personal_deepest;
 			return;
 		}
+		time.text = "" + (int)time_left;
 		foreach (Task task in tasks) {
 			if (task.worker == null) {
 				int w = task.GetClosestWorkerWithoutTask();
@@ -187,9 +214,9 @@ public class TaskManager : MonoBehaviour {
 			TileBase map_tile = map.GetTile(cell_coord);
 			if (map_tile != null) {
 				if (data_from_base[map_tile].type == TileData.TileType.gold) {
-					AddTask(new Task(Task.Type.mine, cell_coord, 2.5f, null));
+					AddTask(new Task(Task.Type.mine, cell_coord, 1.5f, null));
 				} else {
-					AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
+					AddTask(new Task(Task.Type.mine, cell_coord, 0.5f, null));
 				}
 				if (hint_stage == 14) {
 					hint.text = "Mine three gold to buy a new house\nBe careful not do undermine your original house";
@@ -439,6 +466,9 @@ public class TaskManager : MonoBehaviour {
 		if (pos.y - 1 < -depth) {
 			++depth;
 			ui_text_depth.text = "Depth: " + depth;
+			if (personal_deepest < depth) {
+				personal_deepest = depth;
+			}
 		}
 	}
 
