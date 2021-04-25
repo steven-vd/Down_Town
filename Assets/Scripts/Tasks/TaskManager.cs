@@ -7,7 +7,7 @@ public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
 
 	[SerializeField]
-	private Tilemap map, selection;
+	private Tilemap map, foreground, selection;
 	[SerializeField]
 	private List<TileData> tile_datas;
 	[SerializeField]
@@ -18,12 +18,14 @@ public class TaskManager : MonoBehaviour {
 	private List<Task> tasks = new List<Task>();
 	public List<Worker> workers = new List<Worker>();
 
+	public static bool build_mode = false;
+	public static int gold_amnt = 0;
+
 	private void Awake() {
 		Instance = this;
 	}
 
 	void Start() {
-		//Generate Map //TODO maybe migrate this
 		const int width = 20;
 		const int depth = -10;
 		const int min_goldness = 95;
@@ -45,8 +47,7 @@ public class TaskManager : MonoBehaviour {
 		}
 
 		//DEBUG
-		SpawnWorker(3, 3);
-		SpawnWorker(-3, 3);
+		buildHouse(new Vector3Int(0, 1, 0));
 	}
 
 	private void Update() {
@@ -62,16 +63,64 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	public void SpawnWorker(int x, int y) {
-		workers.Add(Instantiate<GameObject>(PF_Worker, new Vector3(x,y, 10), Quaternion.identity).GetComponent<Worker>());
+		workers.Add(Instantiate<GameObject>(PF_Worker, new Vector3(x, y, 10), Quaternion.identity).GetComponent<Worker>());
+	}
+
+	public void MousePressed(Vector3 mouse_pos) {
+		if (!build_mode) {
+			Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
+			Vector3Int cell_coord = map.WorldToCell(world_pos);
+			TileBase map_tile = map.GetTile(cell_coord);
+			if (map_tile != null) {
+				AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
+			}
+		}
 	}
 
 	public void OnClick(Vector3 mouse_pos) {
-		Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
-		Vector3Int cell_coord = map.WorldToCell(world_pos);
-		TileBase map_tile = map.GetTile(cell_coord);
-		if (map_tile != null) {
-			AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
+		if (build_mode) {
+			//TODO ? Add a task for this???
+			Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
+			Vector3Int cell_coord = map.WorldToCell(world_pos);
+			const int house_price = 3;
+			if (gold_amnt < house_price ||
+				map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y, 0)) != null ||
+				map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y, 0)) != null ||
+				map.GetTile(cell_coord) != null ||
+				map.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y, 0)) != null ||
+				foreground.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y, 0)) != null ||
+				foreground.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y, 0)) != null ||
+				foreground.GetTile(cell_coord) != null ||
+				foreground.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y, 0)) != null ) {
+				return;
+			}
+
+			gold_amnt -= house_price;
+			buildHouse(cell_coord);
 		}
+	}
+
+	private void buildHouse(Vector3Int pos) {
+		int x = pos.x, y = pos.y;
+		TileBase brick = tile_datas[(int)TileData.TileType.brick_flat].tile;
+		TileBase slope_left = tile_datas[(int)TileData.TileType.brick_slope_left].tile;
+		TileBase slope_right = tile_datas[(int)TileData.TileType.brick_slope_right].tile;
+		TileBase door = tile_datas[(int)TileData.TileType.door].tile;
+
+		//Left
+		foreground.SetTile(new Vector3Int(x + -2, y + 0, 0), door);
+		foreground.SetTile(new Vector3Int(x + -2, y + 1, 0), brick);
+		foreground.SetTile(new Vector3Int(x + -2, y + 2, 0), slope_right);
+		foreground.SetTile(new Vector3Int(x + -1, y + 2, 0), brick);
+		foreground.SetTile(new Vector3Int(x + -1, y + 3, 0), slope_right);
+		//Right
+		foreground.SetTile(new Vector3Int(x + 1, y + 0, 0), door);
+		foreground.SetTile(new Vector3Int(x + 1, y + 1, 0), brick);
+		foreground.SetTile(new Vector3Int(x + 1, y + 2, 0), slope_left);
+		foreground.SetTile(new Vector3Int(x + 0, y + 2, 0), brick);
+		foreground.SetTile(new Vector3Int(x + 0, y + 3, 0), slope_left);
+
+		SpawnWorker(x, y + 1);
 	}
 
 	private void AddTask(Task task) {
@@ -124,7 +173,32 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	private void checkIntegrity(Vector3Int pos) {
-		if (map.GetTile(pos) == null) {
+		if (foreground.GetTile(pos) != null) {
+			// Destroy House
+			int x, y = pos.y;
+			if (foreground.GetTile(new Vector3Int(pos.x + 3, pos.y, 0)) != null) {
+				x = pos.x + 2;
+			} else {
+				x = pos.x - 1;
+			}
+			//Left
+			foreground.SetTile(new Vector3Int(x + -2, y + 0, 0), null);
+			foreground.SetTile(new Vector3Int(x + -2, y + 1, 0), null);
+			foreground.SetTile(new Vector3Int(x + -2, y + 2, 0), null);
+			foreground.SetTile(new Vector3Int(x + -1, y + 2, 0), null);
+			foreground.SetTile(new Vector3Int(x + -1, y + 3, 0), null);
+			//Right
+			foreground.SetTile(new Vector3Int(x + 1, y + 0, 0), null);
+			foreground.SetTile(new Vector3Int(x + 1, y + 1, 0), null);
+			foreground.SetTile(new Vector3Int(x + 1, y + 2, 0), null);
+			foreground.SetTile(new Vector3Int(x + 0, y + 2, 0), null);
+			foreground.SetTile(new Vector3Int(x + 0, y + 3, 0), null);
+
+			// Kill random worker
+			Destroy(workers[workers.Count - 1].gameObject);
+			workers.RemoveAt(workers.Count - 1);
+			return;
+		} else if (map.GetTile(pos) == null) {
 			return;
 		}
 		TileData.TileType type_below = data_from_base[map.GetTile(new Vector3Int(pos.x, pos.y - 1, 0))].type;
@@ -140,7 +214,7 @@ public class TaskManager : MonoBehaviour {
 		Vector3Int right = new Vector3Int(pos.x + 1, pos.y, 0);
 		Vector3Int left = new Vector3Int(pos.x - 1, pos.y, 0);
 		if (data_from_base[map.GetTile(pos)].type == TileData.TileType.gold) {
-			Debug.Log("GOLD");
+			++gold_amnt;
 		}
 		map.SetTile(pos, null);
 		if (map.GetTile(right) != null) {

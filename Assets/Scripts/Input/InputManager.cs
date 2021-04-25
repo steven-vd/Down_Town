@@ -10,4 +10,7 @@ public static class InputManager {
 	public static KeyCode cam_left	= KeyCode.A;
 	public static KeyCode cam_down	= KeyCode.S;
 	public static KeyCode cam_right	= KeyCode.D;
+
+	//Interaction
+	public static KeyCode switch_mode = KeyCode.Space;
 }

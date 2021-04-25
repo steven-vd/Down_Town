@@ -21,9 +21,18 @@ public class CameraInput : MonoBehaviour {
 		if (Input.GetKey(InputManager.cam_right)) {
 			move(1, 0);
 		}
-		//Mouse click
-		if (Input.GetMouseButton(0)) {
+
+		// - Mouse click - 
+		if (Input.GetMouseButtonDown(0)) {
 			TaskManager.Instance.OnClick(Input.mousePosition);
+		}
+		// - Mouse Btn Hold -
+		if (Input.GetMouseButton(0)) {
+			TaskManager.Instance.MousePressed(Input.mousePosition);
+		}
+		// - Switch Build / Mine Mode -
+		if (Input.GetKeyDown(InputManager.switch_mode)) {
+			TaskManager.build_mode = !TaskManager.build_mode;
 		}
 	}
 	private void move(int x, int y) {
