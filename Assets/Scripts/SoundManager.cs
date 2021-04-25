@@ -43,4 +43,9 @@ public class SoundManager : MonoBehaviour {
 		sources[1].Play();
 	}
 
+	public void PlayCrash(float x) {
+		sources[2].panStereo = x;
+		sources[2].Play();
+	}
+
 }

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class TaskManager : MonoBehaviour {
 	public static TaskManager Instance;
 
+	//private List<GameObject>
+
 	[SerializeField]
 	private Tilemap map, foreground, selection, background;
 	public Tilemap tmp_selection;
@@ -290,6 +292,7 @@ public class TaskManager : MonoBehaviour {
 
 	private void checkIntegrity(Vector3Int pos) {
 		if (foreground.GetTile(pos) != null) {
+			SoundManager.Instance.PlayCrash((pos.x - main_cam.transform.position.x) / 100.0f);
 			// Destroy House
 			int x, y = pos.y;
 			if (foreground.GetTile(new Vector3Int(pos.x + 3, pos.y, 0)) != null) {
