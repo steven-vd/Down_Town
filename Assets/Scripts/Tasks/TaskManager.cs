@@ -19,7 +19,7 @@ public class TaskManager : MonoBehaviour {
 	public List<Worker> workers = new List<Worker>();
 
 	public static bool build_mode = false;
-	public static int gold_amnt = 0;
+	public static int gold_amnt = 10;
 
 	private const int map_initial_width = 40;
 	private const int map_initial_depth = -15;
@@ -89,8 +89,15 @@ public class TaskManager : MonoBehaviour {
 			Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
 			Vector3Int cell_coord = map.WorldToCell(world_pos);
 			const int house_price = 3;
-			//TODO check if grounded
 			if (gold_amnt < house_price ||
+				map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x + 0, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x + 0, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
 				map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y, 0)) != null ||
 				map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y, 0)) != null ||
 				map.GetTile(cell_coord) != null ||
