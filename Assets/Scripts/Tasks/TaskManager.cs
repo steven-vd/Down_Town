@@ -217,7 +217,7 @@ public class TaskManager : MonoBehaviour {
 			TileBase map_tile = map.GetTile(cell_coord);
 			if (map_tile != null) {
 				if (data_from_base[map_tile].type == TileData.TileType.gold) {
-					AddTask(new Task(Task.Type.mine, cell_coord, 1.5f, null));
+					AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
 				} else {
 					AddTask(new Task(Task.Type.mine, cell_coord, 0.5f, null));
 				}
