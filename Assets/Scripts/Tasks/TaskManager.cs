@@ -144,7 +144,6 @@ public class TaskManager : MonoBehaviour {
 		}
 
 		//Add Task
-		//TODO check if another task of a different type is already present?
 		tasks.Add(task);
 
 		//Visualise
@@ -181,9 +180,12 @@ public class TaskManager : MonoBehaviour {
 
 	public bool isReachable(Vector3Int pos) {
 		return
-			map.GetTile(new Vector3Int(pos.x, pos.y + 1, 0)) == null ||
-			map.GetTile(new Vector3Int(pos.x + 1, pos.y, 0)) == null ||
-			map.GetTile(new Vector3Int(pos.x - 1, pos.y, 0)) == null;
+			foreground.GetTile(new Vector3Int(pos.x, pos.y + 1, 0)) == null &&
+			(
+				map.GetTile(new Vector3Int(pos.x, pos.y + 1, 0)) == null ||
+				map.GetTile(new Vector3Int(pos.x + 1, pos.y, 0)) == null ||
+				map.GetTile(new Vector3Int(pos.x - 1, pos.y, 0)) == null
+			);
 	}
 
 	private void checkIntegrity(Vector3Int pos) {
@@ -273,7 +275,6 @@ public class TaskManager : MonoBehaviour {
 			populateRow(pos.y + map_initial_depth + 1);
 			--map_depth;
 		}
-		//TODO check if door directly above
 	}
 
 }
