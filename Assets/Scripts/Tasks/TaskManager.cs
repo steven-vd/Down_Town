@@ -43,6 +43,7 @@ public class TaskManager : MonoBehaviour {
 			data_from_base.Add(data.tile, data);
 		}
 		init();
+		ui_text_gold.text = "";
 	}
 
 	private void init() {

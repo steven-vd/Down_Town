@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraInput : MonoBehaviour {
 
@@ -56,6 +57,8 @@ public class CameraInput : MonoBehaviour {
 
 	public void ToggleMenu() {
 		menu.SetActive(!menu.activeSelf);
+		menu.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "Resume";
+		TaskManager.Instance.addGold(0);
 	}
 
 	public void Quit() {
