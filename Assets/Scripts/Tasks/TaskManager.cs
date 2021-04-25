@@ -231,6 +231,8 @@ public class TaskManager : MonoBehaviour {
 		foreground.SetTile(new Vector3Int(x + 0, y + 2, 0), brick);
 		foreground.SetTile(new Vector3Int(x + 0, y + 3, 0), slope_left);
 		//Background
+		background.SetTile(new Vector3Int(x - 2, y + 0, 0), brick);
+		background.SetTile(new Vector3Int(x + 1, y + 0, 0), brick);
 		background.SetTile(new Vector3Int(x - 1, y + 0, 0), brick);
 		background.SetTile(new Vector3Int(x - 1, y + 1, 0), brick);
 		background.SetTile(new Vector3Int(x + 0, y + 0, 0), brick);
