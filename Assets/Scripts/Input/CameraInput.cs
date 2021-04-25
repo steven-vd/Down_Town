@@ -19,6 +19,7 @@ public class CameraInput : MonoBehaviour {
 			ToggleMenu();
 		}
 
+		TaskManager.Instance.tmp_selection.ClearAllTiles();
 		if (menu.activeSelf) {
 			return;
 		}
@@ -37,6 +38,7 @@ public class CameraInput : MonoBehaviour {
 			move(1, 0);
 		}
 
+		TaskManager.Instance.OnMouseMove(Input.mousePosition);
 		// - Mouse Left Click - 
 		if (Input.GetMouseButtonDown(0)) {
 			TaskManager.Instance.OnClick(Input.mousePosition);

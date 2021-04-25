@@ -9,6 +9,7 @@ public class TaskManager : MonoBehaviour {
 
 	[SerializeField]
 	private Tilemap map, foreground, selection;
+	public Tilemap tmp_selection;
 	[SerializeField]
 	private List<TileData> tile_datas;
 	[SerializeField]
@@ -52,7 +53,7 @@ public class TaskManager : MonoBehaviour {
 		selection.ClearAllTiles();
 		tasks.Clear();
 
-		_gold_amnt = 0;
+		_gold_amnt = 3;
 		AddGold(0);
 		map_left = -map_initial_width / 2;
 		map_right = map_initial_width / 2;
@@ -61,7 +62,8 @@ public class TaskManager : MonoBehaviour {
 		for (int i = -map_initial_width / 2; i < map_initial_width / 2; ++i) {
 			populateColumn(i);
 		}
-		buildHouse(new Vector3Int(0, 1, 0));
+		build_mode = true;
+		//buildHouse(new Vector3Int(0, 1, 0));
 	}
 
 	private void Update() {
@@ -97,13 +99,66 @@ public class TaskManager : MonoBehaviour {
 		workers.Add(Instantiate<GameObject>(PF_Worker, new Vector3(x, y, 10), Quaternion.identity).GetComponent<Worker>());
 	}
 
+	public void OnMouseMove(Vector3 mouse_pos) {
+		Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
+		Vector3Int cell_coord = map.WorldToCell(world_pos);
+		if (!build_mode) {
+			tmp_selection.color = new Color(0, 1, 0, 0.4f);
+			tmp_selection.SetTile(cell_coord, tile_datas[(int)TileData.TileType.selection_flat].tile);
+		} else {
+			int x = cell_coord.x, y = cell_coord.y;
+			TileBase brick = tile_datas[(int)TileData.TileType.brick_flat].tile;
+			TileBase slope_left = tile_datas[(int)TileData.TileType.brick_slope_left].tile;
+			TileBase slope_right = tile_datas[(int)TileData.TileType.brick_slope_right].tile;
+			TileBase door = tile_datas[(int)TileData.TileType.door].tile;
+
+			if (map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x + 0, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x + 0, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y - 1, 0)) == null ||
+				data_from_base[map.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y - 1, 0))].type != TileData.TileType.ground_dirt_flat ||
+				map.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y, 0)) != null ||
+				map.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y, 0)) != null ||
+				map.GetTile(cell_coord) != null ||
+				map.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y, 0)) != null ||
+				foreground.GetTile(new Vector3Int(cell_coord.x - 2, cell_coord.y, 0)) != null ||
+				foreground.GetTile(new Vector3Int(cell_coord.x - 1, cell_coord.y, 0)) != null ||
+				foreground.GetTile(cell_coord) != null ||
+				foreground.GetTile(new Vector3Int(cell_coord.x + 1, cell_coord.y, 0)) != null) {
+				tmp_selection.color = new Color(1, 0, 0, 0.4f);
+			} else {
+				tmp_selection.color = new Color(0, 1, 0, 0.4f);
+			}
+
+			//Left
+			tmp_selection.SetTile(new Vector3Int(x + -2, y + 0, 0), door);
+			tmp_selection.SetTile(new Vector3Int(x + -2, y + 1, 0), brick);
+			tmp_selection.SetTile(new Vector3Int(x + -2, y + 2, 0), slope_right);
+			tmp_selection.SetTile(new Vector3Int(x + -1, y + 2, 0), brick);
+			tmp_selection.SetTile(new Vector3Int(x + -1, y + 3, 0), slope_right);
+			//Right
+			tmp_selection.SetTile(new Vector3Int(x + 1, y + 0, 0), door);
+			tmp_selection.SetTile(new Vector3Int(x + 1, y + 1, 0), brick);
+			tmp_selection.SetTile(new Vector3Int(x + 1, y + 2, 0), slope_left);
+			tmp_selection.SetTile(new Vector3Int(x + 0, y + 2, 0), brick);
+			tmp_selection.SetTile(new Vector3Int(x + 0, y + 3, 0), slope_left);
+		}
+	}
+
 	public void MousePressed(Vector3 mouse_pos) {
 		if (!build_mode) {
 			Vector2 world_pos = main_cam.ScreenToWorldPoint(mouse_pos);
 			Vector3Int cell_coord = map.WorldToCell(world_pos);
 			TileBase map_tile = map.GetTile(cell_coord);
 			if (map_tile != null) {
-				AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
+				if (data_from_base[map_tile].type == TileData.TileType.gold) {
+					AddTask(new Task(Task.Type.mine, cell_coord, 2.5f, null));
+				} else {
+					AddTask(new Task(Task.Type.mine, cell_coord, 1.0f, null));
+				}
 			}
 		}
 	}
@@ -265,8 +320,8 @@ public class TaskManager : MonoBehaviour {
 		}
 	}
 
+	private const int min_goldness = 96;
 	private void populateRow(int row) {
-		const int min_goldness = 95;
 		for (int x = map_left; x < map_right; ++x) {
 			int goldness = Random.Range(0, 100);
 			if (goldness > min_goldness) {
@@ -278,7 +333,6 @@ public class TaskManager : MonoBehaviour {
 	}
 
 	private void populateColumn(int col) {
-		const int min_goldness = 95;
 		for (int depth = 0; depth > map_depth; --depth) {
 			int goldness = Random.Range(0, 100);
 			if (goldness > min_goldness) {
@@ -299,6 +353,7 @@ public class TaskManager : MonoBehaviour {
 			AddGold(1);
 		}
 		map.SetTile(pos, null);
+
 		if (map.GetTile(right) != null) {
 			map.SetTile(right, tile_datas[(int)TileData.TileType.ground_dirt_slope_right].tile);
 			checkIntegrity(new Vector3Int(pos.x + 1, pos.y + 1, 0));
@@ -306,13 +361,15 @@ public class TaskManager : MonoBehaviour {
 			populateColumn(right.x);
 			++map_right;
 		}
+
 		if (map.GetTile(left) != null) {
 			map.SetTile(left, tile_datas[(int)TileData.TileType.ground_dirt_slope_left].tile);
 			checkIntegrity(new Vector3Int(pos.x - 1, pos.y + 1, 0));
-		} else if (left.x - 2 < -map_right) {
+		} else if (left.x - 2 < map_left) {
 			populateColumn(left.x);
 			--map_left;
 		}
+
 		if (pos.y + map_initial_depth < map_depth) {
 			populateRow(pos.y + map_initial_depth + 1);
 			--map_depth;
