@@ -17,6 +17,7 @@ public class CameraInput : MonoBehaviour {
 	}
 
 	void Update() {
+		sky.transform.position = new Vector3(transform.position.x, 4, 14);
 		// --- Input ---
 
 		// - Toggle Menu -
@@ -105,6 +106,5 @@ public class CameraInput : MonoBehaviour {
 
 		float speed = InputManager.cam_move_speed * Time.deltaTime;
 		transform.Translate(x * speed, y * speed, 0);
-		sky.transform.position = new Vector3(transform.position.x, 4, 14);
 	}
 }
